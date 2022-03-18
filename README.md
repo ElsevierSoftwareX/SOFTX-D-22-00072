@@ -5,7 +5,7 @@
 HiVecMap is an efficient and real-time map visualization software tool for massive geographic vector data mapping, which provides users a interactive way to perform data organization and visualization on large-scale geographic vector data and reduces the memory overhead by loading the constructed spatial index file instead of the original dataset. In HiVecMap, the vector data including point, linestring and polygon features are rasterized and the map tile technology is used, therefore, the general high-resolution cartographic preview effect can display in the screen quickly after constructing the VPQ spatial index of a given dataset and calculating the specific pixel value of the screen. Additionally, while traditional GIS softwares are difficult to display tens of millions of geographic vector data, HivecMap can realize real-time interactive browsing of geographic vector data of a billion scales.
 
 ![](./figure/architecture.jpg)
-*ffig1. Architecture of HiVecMap*
+*Fig1. Architecture of HiVecMap*
 
 ## 2. Software Settings
 
