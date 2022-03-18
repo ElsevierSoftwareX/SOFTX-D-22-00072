@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>|HiVecMap|</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='./lib/css/ol.css')}}" type="text/css">
+    <link rel="stylesheet" href="{{url_for('static', filename='./lib/css/bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='./lib/css/bootstrap-colorpicker.css')}}">
+    <style>
+        body {
+              margin: 0;
+              padding: 0;
+        }
+        .map {
+          border: 0px;
+          margin: 0px;
+          padding: 0px;
+          height: 1000px;
+          width: 100%;
+        }
+        
+        .map-overlay {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 200px;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay-inner fieldset {
+            border: none;
+            padding: 0;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay-inner fieldset:last-child {
+            margin: 0;
+        }
+
+        .map-overlay-inner select {
+            width: 100%;
+        }
+
+        .map-overlay-inner label {
+            display: block;
+            font-weight: bold;
+            margin: 0 0 5px;
+        }
+
+        .map-overlay-inner button {
+            width: 100%;
+        }
+
+        .map-overlay-inner input {
+            width: 92%;
+        }
+
+        #menu a {
+            font-size: 13px;
+            color: #404040;
+            display: block;
+            margin: 0;
+            padding: 0;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        #menu a:last-child {
+            border: none;
+        }
+
+        #menu a:hover {
+            background-color: #f8f8f8;
+            color: #404040;
+        }
+
+        #menu a.active {
+            background-color: rgba(18, 134, 200, 1);
+            color: #fff;
+        }
+
+        #menu a.active:hover {
+            background: #3074a4;
+        }
+
+        .higis-attr-popup h4 {
+            color: #CCCCCC;
+            margin: 0;
+            padding: 0;
+            text-transform: uppercase;
+            font: bold 11px "Helvetica Neue", "Helvetica", Arial;
+        }
+
+        .higis-attr-popup p {
+            margin: 0px;
+            padding: 0 0 7px;
+        }
+
+    </style>
+    <script src="{{url_for('static', filename='./lib/jquery.js')}}"></script>
+    <script src="{{url_for('static', filename='./lib/bootstrap-colorpicker.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='./lib/ol.js')}}"></script>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+
+    <div class="map-overlay top">
+      <div class='map-overlay-inner' style="background-color: silver;">
+        <fieldset>
+          <label style="color: rgb(218, 75, 32);">Layer</label>
+          <select id="layers" name="layers">
+            <option value="point">China mainland poi (point)</option>
+            <option value="line">China mainland road (lineString)</option>
+            <option value="polygon">China mainland province (polygon)</option>
+          </select>
+          <label style="color: rgb(218, 75, 32);">Color</label>
+          <input id="LayerCP" type="text" class="form-control"/>
+          <button id='enter' type='button'>Enter</button>
+          <html:text property="a" styleId='b' maxlength="64"/>
+        </fieldset>
+      </div>
+    </div>
+    
+
+    <script>
+    
+
+      var cp = $("#LayerCP").colorpicker({
+        format: 'rgb',
+        color: 'rgba(196,39,39,0.8)'
+      });
+
+      var background = new ol.layer.Tile({
+          source: new ol.source.XYZ({
+              url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+          })
+      })
+
+      var pointTiles = new ol.layer.Tile({
+          source: new ol.source.XYZ({
+              url: 'http://localhost:10085/HiVecMap/point/255/0/0/1/{z}/{x}/{y}.png',
+          })
+      })
+
+      var map = new ol.Map({
+          target: 'map',
+          view: new ol.View({
+              center: ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857'),
+              zoom: 2,
+              maxZoom: 9,
+              minZoom: 0,
+          })
+      });
+      map.addLayer(background);
+      map.addLayer(pointTiles);
+
+
+      // define click function
+      var Enter = document.getElementById('enter');
+      Enter.addEventListener('click', function () {
+        var layerColor = cp.data('color');
+        var shpType = document.getElementById("layers").value;
+
+        var tiles = new ol.layer.Tile({
+          source: new ol.source.XYZ({
+              url: 'http://localhost:10085/HiVecMap/' + shpType + '/' + layerColor._r + '/' + layerColor._g + '/' + layerColor._b + '/' + layerColor._a + '/{z}/{x}/{y}.png',
+          })
+        })
+        map.setLayers(tiles);
+        map.addLayer(background);
+        map.addLayer(tiles);
+      });
+
+    </script>
+  </body>
+</html>
+
